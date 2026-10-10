@@ -14,6 +14,8 @@ There are no package dependencies or build commands.
 
 ## Cloudflare Pages
 
+The `formwell` Pages project is configured to deploy from this repository's `main` branch. Its generated URL is https://formwell-7ak.pages.dev. The purchased `formwell.dev` domain is being connected separately; the Pages URL is usable while that completes.
+
 Connect this GitHub repository using Cloudflare Pages Git integration. Use the `main` production branch, framework preset `None`, build command `exit 0`, root directory `/`, and build output directory `dist`. Each push to `main` can then deploy automatically. These settings follow the [Cloudflare static HTML guide](https://developers.cloudflare.com/pages/framework-guides/deploy-anything/).
 
 Add `formwell.dev` through the Pages project's Custom domains screen after the initial deployment. Inspect existing DNS records before changing any record. No Cloudflare API key belongs in this repository.

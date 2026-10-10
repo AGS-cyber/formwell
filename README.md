@@ -14,7 +14,7 @@ There are no package dependencies or build commands.
 
 ## Cloudflare Pages
 
-Connect this GitHub repository using Cloudflare Pages Git integration. Use the `main` production branch, framework preset `None`, no build command, root directory `/`, and build output directory `dist`. Each push to `main` can then deploy automatically.
+Connect this GitHub repository using Cloudflare Pages Git integration. Use the `main` production branch, framework preset `None`, build command `exit 0`, root directory `/`, and build output directory `dist`. Each push to `main` can then deploy automatically. These settings follow the [Cloudflare static HTML guide](https://developers.cloudflare.com/pages/framework-guides/deploy-anything/).
 
 Add `formwell.dev` through the Pages project's Custom domains screen after the initial deployment. Inspect existing DNS records before changing any record. No Cloudflare API key belongs in this repository.
 

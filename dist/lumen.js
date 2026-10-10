@@ -3,16 +3,26 @@
  *
  * Without JavaScript the four capabilities are a plain ruled list and the
  * stage is a static composition (customer portal in front). With it, they
- * become a vertical tablist (arrow keys, Home/End); choosing one turns the
- * stage the short way round so that capability's pane is front and centre.
- * Panel height stays stable because every panel shares one grid cell.
- * A gentle pointer tilt runs only while motion is on and the pointer is over
- * the stage itself; nothing loops while idle.
+ * become a tablist (arrow keys, Home/End); choosing one turns the stage the
+ * short way round so that capability's pane is front and centre. Panel height
+ * stays stable because every panel shares one grid cell.
+ *
+ * The stage only moves when the visitor asks: a tab choice, or a gentle tilt
+ * that follows a mouse pointer over the stage itself (never touch). Nothing
+ * runs while idle, so there is no motion to pause. With reduced motion the
+ * tilt is off and the CSS makes the turn instant.
+ *
+ * On phones (portrait) and short landscape screens the tablist is a one-row
+ * segmented control under the stage; its aria-orientation follows that.
  */
 (function (global) {
   "use strict";
 
   var POSITIONS = ["front", "right", "back", "left"];
+  /* Keep in sync with the segmented-control media queries in lumen.css (tested). */
+  var SEGMENTED_QUERY =
+    "(max-width: 699px) and (orientation: portrait), (orientation: landscape) and (max-height: 500px) and (min-width: 480px) and (max-width: 1023px)";
+  var REDUCED_QUERY = "(prefers-reduced-motion: reduce)";
 
   /* Shortest signed number of quarter turns from one index to another. */
   function ringStep(from, to, count) {
@@ -26,7 +36,12 @@
     return count === POSITIONS.length ? POSITIONS[slot] : "slot-" + slot;
   }
 
-  global.JLLumen = Object.freeze({ ringStep: ringStep, positionOf: positionOf });
+  global.JLLumen = Object.freeze({
+    ringStep: ringStep,
+    positionOf: positionOf,
+    SEGMENTED_QUERY: SEGMENTED_QUERY,
+    REDUCED_QUERY: REDUCED_QUERY,
+  });
 
   if (typeof document === "undefined") return;
 
@@ -44,6 +59,16 @@
   });
   if (!tabs.length || tabs.length !== panels.length) return;
 
+  function media(query) {
+    return global.matchMedia ? global.matchMedia(query) : null;
+  }
+
+  function onMediaChange(list, listener) {
+    if (!list) return;
+    if (list.addEventListener) list.addEventListener("change", listener);
+    else if (list.addListener) list.addListener(listener);
+  }
+
   tablist.hidden = false;
   panelsWrap.classList.add("is-tabbed");
   if (explorer) explorer.classList.add("is-tabbed");
@@ -51,6 +76,13 @@
     panel.setAttribute("role", "tabpanel");
     panel.setAttribute("aria-labelledby", "tab-" + panel.getAttribute("data-panel"));
   });
+
+  var segmented = media(SEGMENTED_QUERY);
+  function syncOrientation() {
+    tablist.setAttribute("aria-orientation", segmented && segmented.matches ? "horizontal" : "vertical");
+  }
+  onMediaChange(segmented, syncOrientation);
+  syncOrientation();
 
   var current = 0;
   var ring = 0;
@@ -97,11 +129,10 @@
 
   select(0, false);
 
-  /* ---------- Pointer tilt: stage only, eased by CSS, no loop ---------- */
+  /* ---------- Pointer tilt: mouse over the stage only, eased by CSS, no loop ---------- */
 
   var tilt = stage.querySelector(".stage__tilt");
-  var motion = global.JLMotion;
-  var running = false;
+  var reduced = media(REDUCED_QUERY);
   var frame = 0;
   var px = 0;
   var py = 0;
@@ -116,30 +147,26 @@
     if (!frame) frame = global.requestAnimationFrame(applyTilt);
   }
 
+  function settle() {
+    if (px || py) {
+      px = 0;
+      py = 0;
+      queue();
+    }
+  }
+
   if (tilt) {
     stage.addEventListener("pointermove", function (event) {
-      if (!running || event.pointerType !== "mouse") return;
+      if (event.pointerType !== "mouse" || (reduced && reduced.matches)) return;
       var rect = stage.getBoundingClientRect();
       px = Math.max(-1, Math.min(1, ((event.clientX - rect.left) / rect.width) * 2 - 1));
       py = Math.max(-1, Math.min(1, ((event.clientY - rect.top) / rect.height) * 2 - 1));
       queue();
     }, { passive: true });
 
-    stage.addEventListener("pointerleave", function () {
-      px = 0;
-      py = 0;
-      queue();
+    stage.addEventListener("pointerleave", settle);
+    onMediaChange(reduced, function () {
+      if (reduced.matches) settle();
     });
-
-    if (motion) {
-      motion.onChange(function (on) {
-        running = on;
-        if (!on && (px || py)) {
-          px = 0;
-          py = 0;
-          queue();
-        }
-      });
-    }
   }
 })(typeof window !== "undefined" ? window : this);

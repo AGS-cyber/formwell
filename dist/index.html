@@ -2,7 +2,7 @@
 <html lang="en" data-site="formwell">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Formwell · I build web apps that make everyday work lighter</title>
   <meta name="description" content="Formwell. I design, build and launch complete web apps for small and midsize businesses: customer portals, internal tools, booking and workflow apps, and dashboards.">
   <link rel="canonical" href="https://formwell.dev/">
@@ -12,7 +12,6 @@
   <link rel="stylesheet" href="assets/base.css">
   <link rel="stylesheet" href="lumen.css">
   <script src="config.js" defer></script>
-  <script src="assets/motion.js" defer></script>
   <script src="assets/brief.js" defer></script>
   <script src="lumen.js" defer></script>
 </head>
@@ -39,7 +38,7 @@
       <div class="wrap hero__grid">
         <h1 class="hero__title" id="hero-title"><span class="ln">I build web apps</span> <span class="ln">that make everyday</span> <span class="ln">work lighter.</span></h1>
         <div class="hero__aside">
-          <p class="hero__lead">Useful, complete web apps for small and midsize businesses. I design, build and launch each one myself, from the first conversation to go-live.</p>
+          <p class="hero__lead">Useful, complete web apps for small and midsize businesses. <span class="hero__more">I design, build and launch each one myself, from the first conversation to go-live.</span></p>
           <div class="hero__actions">
             <a class="pill pill--ink" href="#start" data-brief-open="#brief">Start a project</a>
             <a class="textlink" href="#build">See what I build <span class="textlink__arrow" aria-hidden="true">↓</span></a>
@@ -51,77 +50,75 @@
     <section class="build" id="build" aria-labelledby="build-title">
       <div class="wrap build__grid">
         <div class="stage-wrap">
-          <div class="stage" data-stage data-motion-scene>
+          <div class="stage" data-stage>
             <div class="stage__light" aria-hidden="true"></div>
             <div class="stage__view" aria-hidden="true">
               <div class="stage__tilt">
-                <div class="stage__sway">
-                  <div class="ring">
-                    <div class="pane pane--portal" data-pane="portal" data-pos="front" style="--i:0">
-                      <span class="pane__shadow"></span>
-                      <span class="pane__top"></span>
-                      <span class="pane__side"></span>
-                      <div class="pane__face">
-                        <div class="ui-top"><span class="ui-avatar"></span><span class="ui-line w40"></span><span class="ui-chip"></span></div>
-                        <div class="ui-progress"><span class="on"></span><span class="on"></span><span class="now"></span><span></span></div>
-                        <div class="ui-list">
-                          <div class="ui-row"><span class="ui-doc"></span><span class="ui-line w60"></span><span class="ui-tag"></span></div>
-                          <div class="ui-row"><span class="ui-doc"></span><span class="ui-line w45"></span><span class="ui-tag ui-tag--soft"></span></div>
-                          <div class="ui-row"><span class="ui-doc"></span><span class="ui-line w55"></span><span class="ui-tag ui-tag--soft"></span></div>
-                        </div>
+                <div class="ring">
+                  <div class="pane pane--portal" data-pane="portal" data-pos="front" style="--i:0">
+                    <span class="pane__shadow"></span>
+                    <span class="pane__top"></span>
+                    <span class="pane__side"></span>
+                    <div class="pane__face">
+                      <div class="ui-top"><span class="ui-avatar"></span><span class="ui-line w40"></span><span class="ui-chip"></span></div>
+                      <div class="ui-progress"><span class="on"></span><span class="on"></span><span class="now"></span><span></span></div>
+                      <div class="ui-list">
+                        <div class="ui-row"><span class="ui-doc"></span><span class="ui-line w60"></span><span class="ui-tag"></span></div>
+                        <div class="ui-row"><span class="ui-doc"></span><span class="ui-line w45"></span><span class="ui-tag ui-tag--soft"></span></div>
+                        <div class="ui-row"><span class="ui-doc"></span><span class="ui-line w55"></span><span class="ui-tag ui-tag--soft"></span></div>
                       </div>
-                      <span class="pane__reflect"></span>
-                      <span class="pane__label">Customer portal</span>
                     </div>
-                    <div class="pane pane--tool" data-pane="tool" data-pos="right" style="--i:1">
-                      <span class="pane__shadow"></span>
-                      <span class="pane__top"></span>
-                      <span class="pane__side"></span>
-                      <div class="pane__face">
-                        <div class="ui-top"><span class="ui-line w30"></span><span class="ui-search"></span></div>
-                        <div class="ui-filters"><span class="on"></span><span></span><span></span></div>
-                        <div class="ui-table">
-                          <div class="ui-tr ui-th"><span></span><span></span><span></span><span></span></div>
-                          <div class="ui-tr"><span></span><span></span><span></span><span class="ui-dot"></span></div>
-                          <div class="ui-tr ui-tr--sel"><span></span><span></span><span></span><span class="ui-dot ui-dot--on"></span></div>
-                          <div class="ui-tr"><span></span><span></span><span></span><span class="ui-dot"></span></div>
-                        </div>
+                    <span class="pane__reflect"></span>
+                    <span class="pane__label">Customer portal</span>
+                  </div>
+                  <div class="pane pane--tool" data-pane="tool" data-pos="right" style="--i:1">
+                    <span class="pane__shadow"></span>
+                    <span class="pane__top"></span>
+                    <span class="pane__side"></span>
+                    <div class="pane__face">
+                      <div class="ui-top"><span class="ui-line w30"></span><span class="ui-search"></span></div>
+                      <div class="ui-filters"><span class="on"></span><span></span><span></span></div>
+                      <div class="ui-table">
+                        <div class="ui-tr ui-th"><span></span><span></span><span></span><span></span></div>
+                        <div class="ui-tr"><span></span><span></span><span></span><span class="ui-dot"></span></div>
+                        <div class="ui-tr ui-tr--sel"><span></span><span></span><span></span><span class="ui-dot ui-dot--on"></span></div>
+                        <div class="ui-tr"><span></span><span></span><span></span><span class="ui-dot"></span></div>
                       </div>
-                      <span class="pane__reflect"></span>
-                      <span class="pane__label">Internal tool</span>
                     </div>
-                    <div class="pane pane--booking" data-pane="booking" data-pos="back" style="--i:2">
-                      <span class="pane__shadow"></span>
-                      <span class="pane__top"></span>
-                      <span class="pane__side"></span>
-                      <div class="pane__face">
-                        <div class="ui-top"><span class="ui-line w35"></span><span class="ui-arrows"></span></div>
-                        <div class="ui-cal">
-                          <span></span><span></span><span class="b1"></span><span></span><span></span><span></span><span></span>
-                          <span></span><span class="b2"></span><span></span><span></span><span class="b1"></span><span></span><span></span>
-                          <span></span><span></span><span></span><span class="b3"></span><span></span><span></span><span></span>
-                          <span class="b1"></span><span></span><span></span><span></span><span></span><span class="b2"></span><span></span>
-                        </div>
+                    <span class="pane__reflect"></span>
+                    <span class="pane__label">Internal tool</span>
+                  </div>
+                  <div class="pane pane--booking" data-pane="booking" data-pos="back" style="--i:2">
+                    <span class="pane__shadow"></span>
+                    <span class="pane__top"></span>
+                    <span class="pane__side"></span>
+                    <div class="pane__face">
+                      <div class="ui-top"><span class="ui-line w35"></span><span class="ui-arrows"></span></div>
+                      <div class="ui-cal">
+                        <span></span><span></span><span class="b1"></span><span></span><span></span><span></span><span></span>
+                        <span></span><span class="b2"></span><span></span><span></span><span class="b1"></span><span></span><span></span>
+                        <span></span><span></span><span></span><span class="b3"></span><span></span><span></span><span></span>
+                        <span class="b1"></span><span></span><span></span><span></span><span></span><span class="b2"></span><span></span>
                       </div>
-                      <span class="pane__reflect"></span>
-                      <span class="pane__label">Booking &amp; workflow</span>
                     </div>
-                    <div class="pane pane--dashboard" data-pane="dashboard" data-pos="left" style="--i:3">
-                      <span class="pane__shadow"></span>
-                      <span class="pane__top"></span>
-                      <span class="pane__side"></span>
-                      <div class="pane__face">
-                        <div class="ui-top"><span class="ui-line w40"></span><span class="ui-chip"></span></div>
-                        <div class="ui-kpis"><span></span><span></span><span></span></div>
-                        <svg class="ui-chart" viewBox="0 0 200 70" preserveAspectRatio="none" focusable="false" aria-hidden="true">
-                          <path class="ui-chart__area" d="M0 58 C20 52 30 40 50 42 S80 30 100 32 S135 14 155 20 S185 10 200 6 V70 H0Z"/>
-                          <path class="ui-chart__line" d="M0 58 C20 52 30 40 50 42 S80 30 100 32 S135 14 155 20 S185 10 200 6"/>
-                        </svg>
-                        <div class="ui-bars"><span style="--h:40%"></span><span style="--h:65%"></span><span style="--h:50%"></span><span style="--h:80%"></span><span style="--h:60%"></span><span style="--h:90%"></span></div>
-                      </div>
-                      <span class="pane__reflect"></span>
-                      <span class="pane__label">Dashboard</span>
+                    <span class="pane__reflect"></span>
+                    <span class="pane__label">Booking &amp; workflow</span>
+                  </div>
+                  <div class="pane pane--dashboard" data-pane="dashboard" data-pos="left" style="--i:3">
+                    <span class="pane__shadow"></span>
+                    <span class="pane__top"></span>
+                    <span class="pane__side"></span>
+                    <div class="pane__face">
+                      <div class="ui-top"><span class="ui-line w40"></span><span class="ui-chip"></span></div>
+                      <div class="ui-kpis"><span></span><span></span><span></span></div>
+                      <svg class="ui-chart" viewBox="0 0 200 70" preserveAspectRatio="none" focusable="false" aria-hidden="true">
+                        <path class="ui-chart__area" d="M0 58 C20 52 30 40 50 42 S80 30 100 32 S135 14 155 20 S185 10 200 6 V70 H0Z"/>
+                        <path class="ui-chart__line" d="M0 58 C20 52 30 40 50 42 S80 30 100 32 S135 14 155 20 S185 10 200 6"/>
+                      </svg>
+                      <div class="ui-bars"><span style="--h:40%"></span><span style="--h:65%"></span><span style="--h:50%"></span><span style="--h:80%"></span><span style="--h:60%"></span><span style="--h:90%"></span></div>
                     </div>
+                    <span class="pane__reflect"></span>
+                    <span class="pane__label">Dashboard</span>
                   </div>
                 </div>
               </div>
@@ -132,17 +129,14 @@
         <div class="explorer">
           <div class="explorer__head">
             <h2 class="explorer__title" id="build-title">What I build</h2>
-            <button type="button" class="motion" data-motion-toggle hidden>
-              <span class="motion__icon" aria-hidden="true"></span><span data-motion-label>Pause motion</span>
-            </button>
           </div>
           <p class="explorer__intro">Four common starting points. Choose one to see what it can include.</p>
 
           <div class="tabs" role="tablist" aria-label="Kinds of web app" aria-orientation="vertical" data-tabs hidden>
-            <button type="button" class="tab" role="tab" id="tab-portal" aria-controls="panel-portal" aria-selected="true" data-tab="portal"><span class="tab__n" aria-hidden="true">01</span><span class="tab__label">Customer portal</span></button>
-            <button type="button" class="tab" role="tab" id="tab-tool" aria-controls="panel-tool" aria-selected="false" tabindex="-1" data-tab="tool"><span class="tab__n" aria-hidden="true">02</span><span class="tab__label">Internal tool</span></button>
-            <button type="button" class="tab" role="tab" id="tab-booking" aria-controls="panel-booking" aria-selected="false" tabindex="-1" data-tab="booking"><span class="tab__n" aria-hidden="true">03</span><span class="tab__label">Booking &amp; workflow</span></button>
-            <button type="button" class="tab" role="tab" id="tab-dashboard" aria-controls="panel-dashboard" aria-selected="false" tabindex="-1" data-tab="dashboard"><span class="tab__n" aria-hidden="true">04</span><span class="tab__label">Dashboard</span></button>
+            <button type="button" class="tab" role="tab" id="tab-portal" aria-controls="panel-portal" aria-selected="true" data-tab="portal"><span class="tab__n" aria-hidden="true">01</span><span class="tab__label">Customer portal</span><span class="tab__short" aria-hidden="true">Portal</span></button>
+            <button type="button" class="tab" role="tab" id="tab-tool" aria-controls="panel-tool" aria-selected="false" tabindex="-1" data-tab="tool"><span class="tab__n" aria-hidden="true">02</span><span class="tab__label">Internal tool</span><span class="tab__short" aria-hidden="true">Tool</span></button>
+            <button type="button" class="tab" role="tab" id="tab-booking" aria-controls="panel-booking" aria-selected="false" tabindex="-1" data-tab="booking"><span class="tab__n" aria-hidden="true">03</span><span class="tab__label">Booking &amp; workflow</span><span class="tab__short" aria-hidden="true">Booking</span></button>
+            <button type="button" class="tab" role="tab" id="tab-dashboard" aria-controls="panel-dashboard" aria-selected="false" tabindex="-1" data-tab="dashboard"><span class="tab__n" aria-hidden="true">04</span><span class="tab__label">Dashboard</span><span class="tab__short" aria-hidden="true">Dashboard</span></button>
           </div>
 
           <div class="panels" data-panels>

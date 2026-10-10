@@ -3,3 +3,10 @@
   X-Content-Type-Options: nosniff
   Referrer-Policy: no-referrer
   Permissions-Policy: camera=(), microphone=(), geolocation=()
+
+# Keep Cloudflare's deployment aliases out of production search results.
+https://formwell-7ak.pages.dev/*
+  X-Robots-Tag: noindex
+
+https://:version.formwell-7ak.pages.dev/*
+  X-Robots-Tag: noindex

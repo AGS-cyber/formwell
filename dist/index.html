@@ -132,11 +132,16 @@
           </div>
           <p class="explorer__intro">Four common starting points. Choose one to see what it can include.</p>
 
-          <div class="tabs" role="tablist" aria-label="Kinds of web app" aria-orientation="vertical" data-tabs hidden>
-            <button type="button" class="tab" role="tab" id="tab-portal" aria-controls="panel-portal" aria-selected="true" data-tab="portal"><span class="tab__n" aria-hidden="true">01</span><span class="tab__label">Customer portal</span><span class="tab__short" aria-hidden="true">Portal</span></button>
-            <button type="button" class="tab" role="tab" id="tab-tool" aria-controls="panel-tool" aria-selected="false" tabindex="-1" data-tab="tool"><span class="tab__n" aria-hidden="true">02</span><span class="tab__label">Internal tool</span><span class="tab__short" aria-hidden="true">Tool</span></button>
-            <button type="button" class="tab" role="tab" id="tab-booking" aria-controls="panel-booking" aria-selected="false" tabindex="-1" data-tab="booking"><span class="tab__n" aria-hidden="true">03</span><span class="tab__label">Booking &amp; workflow</span><span class="tab__short" aria-hidden="true">Booking</span></button>
-            <button type="button" class="tab" role="tab" id="tab-dashboard" aria-controls="panel-dashboard" aria-selected="false" tabindex="-1" data-tab="dashboard"><span class="tab__n" aria-hidden="true">04</span><span class="tab__label">Dashboard</span><span class="tab__short" aria-hidden="true">Dashboard</span></button>
+          <div class="dial" data-dial hidden>
+            <div class="tabs" role="tablist" aria-label="Kinds of web app" aria-orientation="horizontal" aria-describedby="dial-help" data-tabs hidden>
+              <button type="button" class="tab" role="tab" id="tab-portal" aria-controls="panel-portal" aria-selected="true" data-tab="portal"><span class="tab__label">Customer portal</span></button>
+              <button type="button" class="tab" role="tab" id="tab-tool" aria-controls="panel-tool" aria-selected="false" tabindex="-1" data-tab="tool"><span class="tab__label">Internal tool</span></button>
+              <button type="button" class="tab" role="tab" id="tab-booking" aria-controls="panel-booking" aria-selected="false" tabindex="-1" data-tab="booking"><span class="tab__label">Booking &amp; workflow</span></button>
+              <button type="button" class="tab" role="tab" id="tab-dashboard" aria-controls="panel-dashboard" aria-selected="false" tabindex="-1" data-tab="dashboard"><span class="tab__label">Dashboard</span></button>
+            </div>
+            <p class="dial__hint" aria-hidden="true"><span class="dial__touch">Swipe to explore</span><span class="dial__mouse">Drag or use arrow keys</span></p>
+            <p class="visually-hidden" id="dial-help">Each one turns the stage to that kind of app. Arrow keys, Home and End move between them.</p>
+            <p class="visually-hidden" role="status" data-dial-status></p>
           </div>
 
           <div class="panels" data-panels>

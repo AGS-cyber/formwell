@@ -1,28 +1,20 @@
 /*
- * Lumen: capability explorer and turntable stage.
- *
- * Without JavaScript the four capabilities are a plain ruled list and the
- * stage is a static composition (customer portal in front). With it, they
- * become a tablist (arrow keys, Home/End); choosing one turns the stage the
- * short way round so that capability's pane is front and centre. Panel height
- * stays stable because every panel shares one grid cell.
- *
- * The stage only moves when the visitor asks: a tab choice, or a gentle tilt
- * that follows a mouse pointer over the stage itself (never touch). Nothing
- * runs while idle, so there is no motion to pause. With reduced motion the
- * tilt is off and the CSS makes the turn instant.
- *
- * On phones (portrait) and short landscape screens the tablist is a one-row
- * segmented control under the stage; its aria-orientation follows that.
+ * Lumen: turntable stage and capability explorer. Without JavaScript the
+ * capabilities are a plain list and the stage is static. With it, swiping
+ * (touch) or dragging (mouse) the stage turns the next capability to the
+ * front; four dots under it are the tablist, the keyboard (arrows, Home/End)
+ * and screen-reader route. Scrolling and pinch-zoom stay native
+ * (touch-action: pan-y pinch-zoom; no preventDefault); only a clear, long
+ * enough sideways move turns. Nothing runs while idle; reduced motion means
+ * no follow or tilt, and an instant turn (CSS).
  */
 (function (global) {
   "use strict";
 
   var POSITIONS = ["front", "right", "back", "left"];
-  /* Keep in sync with the segmented-control media queries in lumen.css (tested). */
-  var SEGMENTED_QUERY =
-    "(max-width: 699px) and (orientation: portrait), (orientation: landscape) and (max-height: 500px) and (min-width: 480px) and (max-width: 1023px)";
   var REDUCED_QUERY = "(prefers-reduced-motion: reduce)";
+  /* Direction decided after `lock` px; a turn needs 12% of the stage (40-90px), `ratio` x more sideways than vertical. */
+  var SWIPE = Object.freeze({ lock: 10, min: 40, max: 90, share: 0.12, ratio: 1.6 });
 
   /* Shortest signed number of quarter turns from one index to another. */
   function ringStep(from, to, count) {
@@ -36,10 +28,25 @@
     return count === POSITIONS.length ? POSITIONS[slot] : "slot-" + slot;
   }
 
+  /* "" until past `lock`, then "x" (a turn) or "y" (a scroll or diagonal, given back). */
+  function axisOf(dx, dy) {
+    if (Math.abs(dx) < SWIPE.lock && Math.abs(dy) < SWIPE.lock) return "";
+    return Math.abs(dx) > Math.abs(dy) * 1.2 ? "x" : "y";
+  }
+
+  /* 1 (moved left: next), -1 (previous) or 0. */
+  function swipeStep(dx, dy, width) {
+    var need = Math.max(SWIPE.min, Math.min(SWIPE.max, width * SWIPE.share));
+    if (Math.abs(dx) < need || Math.abs(dx) < Math.abs(dy) * SWIPE.ratio) return 0;
+    return dx < 0 ? 1 : -1;
+  }
+
   global.JLLumen = Object.freeze({
     ringStep: ringStep,
     positionOf: positionOf,
-    SEGMENTED_QUERY: SEGMENTED_QUERY,
+    axisOf: axisOf,
+    swipeStep: swipeStep,
+    SWIPE: SWIPE,
     REDUCED_QUERY: REDUCED_QUERY,
   });
 
@@ -47,8 +54,10 @@
 
   var stage = document.querySelector("[data-stage]");
   var explorer = document.querySelector(".explorer");
+  var dial = document.querySelector("[data-dial]");
   var tablist = document.querySelector("[data-tabs]");
   var panelsWrap = document.querySelector("[data-panels]");
+  var status = document.querySelector("[data-dial-status]");
   if (!stage || !tablist || !panelsWrap) return;
 
   var tabs = Array.prototype.slice.call(tablist.querySelectorAll("[role='tab']"));
@@ -57,37 +66,31 @@
   var keys = tabs.map(function (tab) {
     return tab.getAttribute("data-tab");
   });
+  var names = tabs.map(function (tab) {
+    return tab.textContent.trim();
+  });
   if (!tabs.length || tabs.length !== panels.length) return;
 
-  function media(query) {
-    return global.matchMedia ? global.matchMedia(query) : null;
+  var reduced = global.matchMedia ? global.matchMedia(REDUCED_QUERY) : null;
+  function still() {
+    return Boolean(reduced && reduced.matches);
   }
 
-  function onMediaChange(list, listener) {
-    if (!list) return;
-    if (list.addEventListener) list.addEventListener("change", listener);
-    else if (list.addListener) list.addListener(listener);
-  }
-
+  if (dial) dial.hidden = false;
   tablist.hidden = false;
   panelsWrap.classList.add("is-tabbed");
   if (explorer) explorer.classList.add("is-tabbed");
+  stage.classList.add("is-swipeable");
   panels.forEach(function (panel) {
     panel.setAttribute("role", "tabpanel");
     panel.setAttribute("aria-labelledby", "tab-" + panel.getAttribute("data-panel"));
   });
 
-  var segmented = media(SEGMENTED_QUERY);
-  function syncOrientation() {
-    tablist.setAttribute("aria-orientation", segmented && segmented.matches ? "horizontal" : "vertical");
-  }
-  onMediaChange(segmented, syncOrientation);
-  syncOrientation();
-
   var current = 0;
   var ring = 0;
 
-  function select(index, moveFocus) {
+  /* announce: a gesture changed it (focus stays put), so the status line says so. */
+  function select(index, moveFocus, announce) {
     ring -= ringStep(current, index, keys.length) * 90;
     current = index;
     stage.style.setProperty("--ring", ring + "deg");
@@ -108,6 +111,7 @@
       var paneIndex = keys.indexOf(pane.getAttribute("data-pane"));
       pane.setAttribute("data-pos", positionOf(paneIndex, index, keys.length));
     });
+    if (announce && status) status.textContent = names[index] + ", " + (index + 1) + " of " + keys.length;
   }
 
   tabs.forEach(function (tab, index) {
@@ -129,44 +133,130 @@
 
   select(0, false);
 
-  /* ---------- Pointer tilt: mouse over the stage only, eased by CSS, no loop ---------- */
+  /* ---------- Swipe/drag and mouse tilt: one frame per change, never a loop ---------- */
 
   var tilt = stage.querySelector(".stage__tilt");
-  var reduced = media(REDUCED_QUERY);
   var frame = 0;
+  var lean = 0; /* degrees the ring follows a sideways drag */
   var px = 0;
   var py = 0;
+  var drag = null;
+  var quietUntil = 0;
 
-  function applyTilt() {
+  function paint() {
     frame = 0;
-    tilt.style.setProperty("--px", px.toFixed(3));
-    tilt.style.setProperty("--py", py.toFixed(3));
+    stage.style.setProperty("--ring", ring + lean + "deg");
+    if (tilt) {
+      tilt.style.setProperty("--px", px.toFixed(3));
+      tilt.style.setProperty("--py", py.toFixed(3));
+    }
   }
 
   function queue() {
-    if (!frame) frame = global.requestAnimationFrame(applyTilt);
+    if (!frame) frame = global.requestAnimationFrame(paint);
   }
 
-  function settle() {
-    if (px || py) {
+  /* Only a finished, single-pointer, sideways gesture turns the stage. */
+  function endDrag(finished) {
+    if (!drag) return;
+    var gesture = drag;
+    drag = null;
+    lean = 0;
+    stage.classList.remove("is-dragging");
+    if (stage.hasPointerCapture && stage.hasPointerCapture(gesture.id)) stage.releasePointerCapture(gesture.id);
+    var step = finished && gesture.axis === "x" ? swipeStep(gesture.dx, gesture.dy, stage.clientWidth) : 0;
+    if (step) select((current + step + keys.length) % keys.length, false, true);
+    else queue();
+  }
+
+  /* Starts only from a lone primary pointer (a later finger is never primary) and the main button. */
+  stage.addEventListener("pointerdown", function (event) {
+    endDrag(false); /* a press whose end was never seen */
+    if (!event.isPrimary || event.button !== 0) return;
+    drag = { id: event.pointerId, mouse: event.pointerType === "mouse", x: event.clientX, y: event.clientY, dx: 0, dy: 0, axis: "" };
+    px = 0;
+    py = 0;
+    try {
+      stage.setPointerCapture(event.pointerId);
+    } catch (error) {
+      /* Uncaptured: leaving the stage ends it (pointerleave). */
+    }
+  });
+
+  stage.addEventListener("pointermove", function (event) {
+    if (drag && event.pointerId === drag.id) {
+      drag.dx = event.clientX - drag.x;
+      drag.dy = event.clientY - drag.y;
+      if (!drag.axis) {
+        drag.axis = axisOf(drag.dx, drag.dy);
+        if (drag.axis === "y") {
+          endDrag(false);
+          return;
+        }
+        if (drag.axis === "x") stage.classList.add("is-dragging");
+      }
+      if (drag.axis === "x" && !still()) {
+        lean = Math.max(-60, Math.min(60, (drag.dx / stage.clientWidth) * 110));
+        queue();
+      }
+      return;
+    }
+    /* Tilt: hovering mouse only (no button held, read live), never mid-drag or with reduced motion. */
+    if (event.pointerType !== "mouse" || event.buttons || drag || still() || !tilt) return;
+    var rect = stage.getBoundingClientRect();
+    px = Math.max(-1, Math.min(1, ((event.clientX - rect.left) / rect.width) * 2 - 1));
+    py = Math.max(-1, Math.min(1, ((event.clientY - rect.top) / rect.height) * 2 - 1));
+    queue();
+  }, { passive: true });
+
+  /*
+   * Document capture, observe only (nothing is prevented): any other pointer
+   * going down anywhere (a second finger on the heading, a pen) cancels the
+   * drag; the drag's own lift or cancel ends it wherever it lands.
+   */
+  function lift(event) {
+    if (!drag || event.pointerId !== drag.id) return;
+    if (drag.axis === "x" && drag.mouse) quietUntil = Date.now() + 400;
+    endDrag(event.type === "pointerup");
+  }
+
+  document.addEventListener("pointerdown", function (event) {
+    quietUntil = 0; /* a new press disarms the click guard below */
+    if (drag && event.pointerId !== drag.id) endDrag(false);
+  }, true);
+  document.addEventListener("pointerup", lift, true);
+  document.addEventListener("pointercancel", lift, true);
+  stage.addEventListener("lostpointercapture", function (event) {
+    if (drag && event.pointerId === drag.id) endDrag(false);
+  });
+  stage.addEventListener("pointerleave", function (event) {
+    if (drag && event.pointerId === drag.id && !stage.hasPointerCapture(event.pointerId)) endDrag(false);
+    if (!drag && (px || py)) {
       px = 0;
       py = 0;
       queue();
     }
-  }
+  });
 
-  if (tilt) {
-    stage.addEventListener("pointermove", function (event) {
-      if (event.pointerType !== "mouse" || (reduced && reduced.matches)) return;
-      var rect = stage.getBoundingClientRect();
-      px = Math.max(-1, Math.min(1, ((event.clientX - rect.left) / rect.width) * 2 - 1));
-      py = Math.max(-1, Math.min(1, ((event.clientY - rect.top) / rect.height) * 2 - 1));
-      queue();
-    }, { passive: true });
+  /* Swallow only the click a sideways mouse drag leaves behind. */
+  document.addEventListener("click", function (event) {
+    if (event.detail > 0 && Date.now() < quietUntil) {
+      quietUntil = 0;
+      event.preventDefault();
+      event.stopPropagation();
+    }
+  }, true);
 
-    stage.addEventListener("pointerleave", settle);
-    onMediaChange(reduced, function () {
-      if (reduced.matches) settle();
-    });
+  if (reduced) {
+    var settle = function () {
+      if (still()) {
+        lean = 0;
+        px = 0;
+        py = 0;
+        queue();
+      }
+    };
+    if (reduced.addEventListener) reduced.addEventListener("change", settle);
+    else if (reduced.addListener) reduced.addListener(settle);
   }
 })(typeof window !== "undefined" ? window : this);

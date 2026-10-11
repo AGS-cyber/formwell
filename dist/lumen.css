@@ -1985,3 +1985,188 @@
     transition: none;
   }
 }
+
+
+/* Spotlight desktop composition, selected 2026-10-11. Accepted phone rules stay above unchanged. */
+@media (min-width: 1024px) {
+  .lumen {
+    --s-h1: clamp(2.5rem, 0.5rem + 2.9vw, 4rem);
+    --s-lead: clamp(1.0625rem, 0.98rem + 0.3vw, 1.1875rem);
+    --s-top: clamp(1rem, 3.4svh, 2.5rem);
+    /* First-screen budget: top padding, two headline lines, gap, two lead lines, gap, actions. */
+    --s-hero: calc(var(--s-top) + var(--s-h1) * 2.04 + 1.1rem + var(--s-lead) * 3.1 + 1.4rem + 48px);
+    /* Height left for the stage under the bar and statement, above the dial and its air. */
+    --s-room: calc(100svh - 76px - var(--s-hero) - 52px - 1.25rem);
+  }
+
+  /* ---------- Statement: centred, two lines ---------- */
+
+  .hero {
+    padding-block: var(--s-top) 0;
+  }
+
+  .hero__grid {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .hero__title {
+    max-width: 15em;
+    font-size: var(--s-h1);
+    line-height: 1.02;
+    text-wrap: balance;
+  }
+
+  .hero__title .ln {
+    display: inline;
+  }
+
+  .hero__aside {
+    max-width: 46rem;
+    margin-top: 1.1rem;
+    padding-bottom: 0;
+  }
+
+  .hero__lead {
+    font-size: var(--s-lead);
+    line-height: 1.55;
+    text-wrap: balance;
+  }
+
+  .hero__actions {
+    justify-content: center;
+    margin-top: 1.4rem;
+  }
+
+  /* ---------- The object ---------- */
+
+  .build__grid {
+    grid-template-columns: minmax(0, 1fr);
+    row-gap: 0;
+  }
+
+  /* Same scene as lumen.css, scaled: every length follows the pane width, perspective included. */
+  .lumen .stage {
+    --pw: clamp(260px, min(42cqw, var(--s-room) / 1.2), 540px);
+    --ph: calc(var(--pw) * 0.66);
+    --r: calc(var(--pw) * 0.72);
+    --floor: calc(var(--pw) * 0.86);
+    --t: calc(var(--pw) * 0.026);
+    --geo-h: calc(var(--pw) * 1.2);
+    height: calc(var(--pw) * 1.2);
+  }
+
+  .lumen .stage__view {
+    perspective: calc(var(--pw) * 4.9);
+  }
+
+  /* A wider pool of light under the larger object. */
+  .lumen .stage__light {
+    background:
+      radial-gradient(26% 7% at 50% 89%, rgba(24, 52, 96, 0.13), transparent 75%),
+      radial-gradient(34% 50% at 46% 40%, rgba(255, 255, 255, 0.95), transparent 72%),
+      radial-gradient(22% 40% at 30% 62%, rgba(103, 211, 200, 0.2), transparent 72%),
+      radial-gradient(24% 42% at 72% 48%, rgba(169, 164, 244, 0.22), transparent 72%);
+  }
+
+  /* ---------- Caption under the object ---------- */
+
+  .explorer {
+    display: grid;
+    grid-template-columns: minmax(0, 4fr) minmax(0, 8fr);
+    grid-template-rows: auto auto auto 1fr;
+    grid-template-areas:
+      "dial dial"
+      "head panels"
+      "intro panels"
+      "note panels";
+    column-gap: clamp(2rem, 5vw, 5rem);
+  }
+
+  /* One hairline across the caption, under the dots. */
+  .explorer::before {
+    content: "";
+    grid-column: 1 / -1;
+    grid-row: 2;
+    align-self: start;
+    margin-top: clamp(1.75rem, 3vw, 2.75rem);
+    border-top: 1px solid var(--line);
+  }
+
+  .dial {
+    grid-area: dial;
+    justify-content: center;
+    margin-top: 0;
+  }
+
+  .tabs {
+    margin-left: 0;
+  }
+
+  .explorer__head {
+    grid-area: head;
+    align-self: start;
+    margin-top: clamp(2.75rem, 4.5vw, 4rem);
+  }
+
+  .explorer__title {
+    font-size: clamp(1.625rem, 1.1rem + 0.9vw, 2.125rem);
+  }
+
+  .explorer__intro {
+    grid-area: intro;
+    max-width: 22em;
+  }
+
+  .explorer__note {
+    grid-area: note;
+    max-width: 24em;
+    margin-top: 1.25rem;
+  }
+
+  .panels {
+    grid-area: panels;
+    margin-top: clamp(2.75rem, 4.5vw, 4rem);
+  }
+
+  .panels.is-tabbed {
+    margin-top: clamp(3rem, 4.75vw, 4.25rem);
+  }
+
+  /* Without JavaScript all four capabilities show: two by two. */
+  .panels:not(.is-tabbed) {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: clamp(2rem, 3.5vw, 3.5rem);
+  }
+
+  .panels:not(.is-tabbed) .panel:nth-child(2) {
+    border-top: 0;
+  }
+
+  .panels:not(.is-tabbed) .panel:nth-child(-n + 2) {
+    padding-top: 0;
+  }
+
+  /* ---------- Below: the same centred axis ---------- */
+
+  .together__head {
+    grid-template-columns: minmax(0, 1fr);
+    justify-items: center;
+    text-align: center;
+  }
+
+  .together__lead {
+    max-width: 34em;
+  }
+
+  .covers {
+    text-align: center;
+  }
+
+  .covers__list {
+    justify-content: center;
+  }
+}
